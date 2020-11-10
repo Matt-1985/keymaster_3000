@@ -1,5 +1,4 @@
-// const args = require("minimist")(process.argv.slice(2));
-
+//
 // console.log(args["name"]); //joe
 
 // const readline = require("readline").createInterface({
@@ -32,24 +31,19 @@
 //   console.log(`Hi ${answers["name"]}!`);
 //   console.log("Korrekt!");
 // });
-console.log("KeyMaster3000");
-
-const masterPassword = "test";
-
 const inquirer = require("inquirer");
+const masterPassword = "test";
+const fs = require("fs").promises;
+const args = process.argv.slice(2);
+const actualPassword = args[0];
 
-let questions = [
-  {
-    type: "input",
-    name: "name",
-    message: "What's your name?",
-  },
-  {
-    type: "checkbox",
-    name: "mood",
-    message: "How are you today?",
-    choices: ["good", "bad", "mehhh"],
-  },
+async function getData() {
+  const promise = await fs.readFile("./db.json", "utf8");
+  const data = await JSON.parse(promise);
+  return data;
+}
+
+const questions = [
   {
     type: "password",
     name: "password",
@@ -57,18 +51,22 @@ let questions = [
   },
 ];
 
-inquirer.prompt(questions).then((answers) => {
-  console.log(`Hi ${answers["name"]}!`);
-
-  if (answers["mood"] === "good") {
-    console.log("Nice!");
-  } else if (answers["mood"] === "bad") {
-    console.log("oh nooo");
+async function validateAccess() {
+  const answers = await inquirer.prompt(questions);
+  if (answers.password !== masterPassword) {
+    console.error("Nice try...try again");
+    return;
   }
+  console.log("wow...how'd you managed?");
 
-  if (answers["password"] === masterPassword) {
-    console.log("Tippi Toppi");
+  const passwordSafe = await getData();
+
+  const password = passwordSafe[actualPassword];
+  if (password) {
+    console.log(`${actualPassword}: ${password}`);
   } else {
-    console.log("Not today Satan");
+    console.log("Endlevel!");
   }
-});
+}
+
+validateAccess();

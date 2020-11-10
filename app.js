@@ -32,6 +32,43 @@
 //   console.log(`Hi ${answers["name"]}!`);
 //   console.log("Korrekt!");
 // });
-const args = process.argv.slice(2);
-const passwordName = args[0];
-console.log(`You want to know the password of ${passwordName}`);
+console.log("KeyMaster3000");
+
+const masterPassword = "test";
+
+const inquirer = require("inquirer");
+
+let questions = [
+  {
+    type: "input",
+    name: "name",
+    message: "What's your name?",
+  },
+  {
+    type: "checkbox",
+    name: "mood",
+    message: "How are you today?",
+    choices: ["good", "bad", "mehhh"],
+  },
+  {
+    type: "password",
+    name: "password",
+    message: "Enter your password",
+  },
+];
+
+inquirer.prompt(questions).then((answers) => {
+  console.log(`Hi ${answers["name"]}!`);
+
+  if (answers["mood"] === "good") {
+    console.log("Nice!");
+  } else if (answers["mood"] === "bad") {
+    console.log("oh nooo");
+  }
+
+  if (answers["password"] === masterPassword) {
+    console.log("Tippi Toppi");
+  } else {
+    console.log("Not today Satan");
+  }
+});

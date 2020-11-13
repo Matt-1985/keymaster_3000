@@ -84,29 +84,21 @@ const { readCommandLineArguments } = require("./lib/commandoLine");
 const { getPassword, setPassword } = require("./lib/passwords");
 const { askForMasterPassword, askForNextStep } = require("./lib/questions");
 const { isMasterPasswordCorrect } = require("./lib/validation");
+const { connect, close } = require("./lib/database");
+const {findInDB} = require("./lib/database");
+const inquirer = require("inquirer");
 
-const MongoClient = require("mongodb").MongoClient;
-const assert = require("assert");
-
-const url =
-  "mongodb+srv://matt:ZkVz2TK2GDq9Xigp@cluster0.re7ym.mongodb.net/keymaster3000?retryWrites=true&w=majority";
-
-MongoClient.connect(url, function (err, client) {
-  assert.equal(null, err);
-
-  const db = client.db("keymaster3000");
-  db.collection("passwords")
-    .insertOne({
-      account: "mauzti",
-      value: "bhsjkasj",
-    })
-    .then(function (result) {
-      // process result
-    });
-  // client.close();
-});
+const SEARCH = "searchAndAdd"
+const ADD = "Add"
 
 async function run() {
+  console.log("Connecting to database...");
+  await connect(
+    "mongodb+srv://matt:ZkVz2TK2GDq9Xigp@cluster0.re7ym.mongodb.net/keymaster3000?retryWrites=true&w=majority",
+    "keymaster3000"
+  );
+  console.log("Connected to database 🎉");
+
   const masterPassword = await askForMasterPassword();
 
   if (!isMasterPasswordCorrect(masterPassword)) {
@@ -114,12 +106,12 @@ async function run() {
     return run;
   }
 
-  const { searchAndAdd } = await askForNextStep();
-  if (searchAndAdd === "Search") {
-    console.log("What password do you want to search for?");
-  } else {
-    console.log("What would you like to add?");
-  }
+ async function askForNextStep() {
+   const { choice } = await inquirer.prompt(choices);
+
+   if 
+ }
+  
 
   const [entryValue, newPasswordValue] = readCommandLineArguments();
   if (!entryValue) {
@@ -129,11 +121,12 @@ async function run() {
 
   if (newPasswordValue) {
     await setPassword(entryValue, newPasswordValue);
-    console.log(`Password ${entryValue}`);
+    console.log(`Account ${entryValue} is set`);
   } else {
     const passwordValue = await getPassword(entryValue);
     console.log(`🀱 your password is: ${passwordValue}`);
   }
+  await close();
 }
 
 run();

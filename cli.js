@@ -80,23 +80,22 @@
 // }
 
 // validateAccess();
+require("dotenv").config();
+
 const { readCommandLineArguments } = require("./lib/commandoLine");
 const { getPassword, setPassword } = require("./lib/passwords");
 const { askForMasterPassword, askForNextStep } = require("./lib/questions");
 const { isMasterPasswordCorrect } = require("./lib/validation");
-const { connect, close } = require("./lib/database");
-const {findInDB} = require("./lib/database");
+const { connect, close, setCollection } = require("./lib/database");
+const { findInDB } = require("./lib/database");
 const inquirer = require("inquirer");
 
-const SEARCH = "searchAndAdd"
-const ADD = "Add"
+const SEARCH = "searchAndAdd";
+const ADD = "Add";
 
 async function run() {
   console.log("Connecting to database...");
-  await connect(
-    "mongodb+srv://matt:ZkVz2TK2GDq9Xigp@cluster0.re7ym.mongodb.net/keymaster3000?retryWrites=true&w=majority",
-    "keymaster3000"
-  );
+  await connect(process.env.MONGO_DB_URI, process.env.MONGO_DB_NAME);
   console.log("Connected to database 🎉");
 
   const masterPassword = await askForMasterPassword();
@@ -106,12 +105,17 @@ async function run() {
     return run;
   }
 
- async function askForNextStep() {
-   const { choice } = await inquirer.prompt(choices);
+  // const deleteAccount = await accountDelete({ entryValue });
 
-   if 
- }
-  
+  // if (deleteAccount) {
+  //   console.log(`Your account ${entryValue} was deleted`);
+  // }
+
+  //  async function askForNextStep() {
+  //    const { choice } = await inquirer.prompt(choices);
+
+  //    if
+  //  }
 
   const [entryValue, newPasswordValue] = readCommandLineArguments();
   if (!entryValue) {
@@ -126,6 +130,7 @@ async function run() {
     const passwordValue = await getPassword(entryValue);
     console.log(`🀱 your password is: ${passwordValue}`);
   }
+
   await close();
 }
 

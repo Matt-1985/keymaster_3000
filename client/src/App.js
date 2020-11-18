@@ -2,15 +2,16 @@ import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState } from "react";
 import { getPassword } from "./api/passwords";
+import useAsync from "./api/hooks/useAsync";
+import Form from "../src/components/Form";
 
 function App() {
-  const [password, setPassword] = useState(null);
+  const [InputValue, setInputValue] = useState("");
+  const { data, loading, error, doFetch } = useAsync(() =>
+    getPassword("merci")
+  );
 
   useEffect(() => {
-    const doFetch = async () => {
-      const newPassword = await getPassword("merci");
-      setPassword(newPassword);
-    };
     doFetch();
   }, []);
 
@@ -18,7 +19,21 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        {password}
+        {data}
+        {loading && <div>loading...</div>}
+        {error && <div>{error.message}</div>}
+        <Form
+          onSubmit={(event) => {
+            event.preventDefault();
+            doFetch();
+            setInputValue();
+          }}
+        >
+          <input
+            value={InputValue}
+            onChange={(event) => setInputValue(event.target.value)}
+          />
+        </Form>
       </header>
     </div>
   );

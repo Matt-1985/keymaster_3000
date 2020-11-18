@@ -12,8 +12,9 @@ app.get("/api/passwords/:name", async (request, response) => {
   const { name } = request.params;
   try {
     const value = await getPassword(name);
+    console.log({ name, value });
     if (!value) {
-      response.status(500).send("Could find the password you were looking for");
+      response.status(500).send("The password couldn't be found");
       return;
     }
     response.send(value);

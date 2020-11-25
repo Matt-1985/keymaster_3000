@@ -3,7 +3,7 @@ import "./App.css";
 import { useEffect, useState } from "react";
 import { getPassword } from "./api/passwords";
 import useAsync from "./api/hooks/useAsync";
-import Form from "../src/components/Form";
+import Form from "./components/Form";
 
 function App() {
   const [InputValue, setInputValue] = useState("");
